@@ -1,6 +1,5 @@
 pipeline{
-
-	agent {}
+	agent none
 
 	environment {
 		DOCKERHUB_CREDENTIALS=credentials('dockerhub')
@@ -16,7 +15,14 @@ pipeline{
 		}
 
 		stage('Build') {
-
+             node{
+                checkout scm
+                docker.withRegistry('https://hub.docker.com/repositories', 'dockerHub') {
+                 def customImage = docker.build("jayrivarez/dockerwebapp")
+                 customImage.push()
+                } 
+             }
+            
 			steps {
 				sh 'docker build -t jayrivarex/node:carbon-alpine .'
 			}
